@@ -9,8 +9,8 @@ interface FriendCardProps {
 }
 
 export default function FriendCard({ friend, stats, onClick }: FriendCardProps) {
-  const goalDiff = stats.goalsFor - stats.goalsAgainst;
-
+  const matchDiff = stats.wins - stats.losses;
+  
   return (
     <button
       onClick={onClick}
@@ -21,15 +21,15 @@ export default function FriendCard({ friend, stats, onClick }: FriendCardProps) 
           <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold text-lg">
             {friend.name.charAt(0)}
           </div>
-          {goalDiff > 0 ? (
+          {matchDiff > 0 ? (
             <div className="flex items-center gap-1 text-win text-sm font-semibold bg-win/10 px-2 py-1 rounded-full">
               <TrendingUp className="w-3.5 h-3.5" />
-              +{goalDiff}
+              +{matchDiff}
             </div>
-          ) : goalDiff < 0 ? (
+          ) : matchDiff < 0 ? (
             <div className="flex items-center gap-1 text-loss text-sm font-semibold bg-loss/10 px-2 py-1 rounded-full">
               <TrendingDown className="w-3.5 h-3.5" />
-              {goalDiff}
+              {matchDiff}
             </div>
           ) : (
             <div className="flex items-center gap-1 text-draw text-sm font-semibold bg-draw/10 px-2 py-1 rounded-full">

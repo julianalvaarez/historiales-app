@@ -1,22 +1,43 @@
-import { Profile, Match } from '@/lib/supabase';
-import { Plus, Trophy, History, Calendar } from 'lucide-react';
+import { useState } from 'react';
+import { supabase, Profile, Match } from '@/lib/supabase';
+import { Plus, Trophy, History, Calendar, Edit2, Trash2, MoreVertical } from 'lucide-react';
 
 interface MatchHistoryProps {
   currentUser: Profile;
   friend: Profile;
   matches: Match[];
   onAddMatch: () => void;
+  onEditMatch: (match: Match) => void;
+  onRefresh: () => void;
 }
 
-export default function MatchHistory({ currentUser, friend, matches, onAddMatch }: MatchHistoryProps) {
+export default function MatchHistory({ currentUser, friend, matches, onAddMatch, onEditMatch, onRefresh }: MatchHistoryProps) {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
       day: '2-digit',
       month: 'short',
-      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('¿Estás seguro de que quieres eliminar este partido?')) return;
+    
+    setDeletingId(id);
+    const { error } = await supabase
+      .from('matches')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      onRefresh();
+    } else {
+      alert('Error al eliminar el partido');
+    }
+    setDeletingId(null);
   };
 
   return (
@@ -60,12 +81,12 @@ export default function MatchHistory({ currentUser, friend, matches, onAddMatch 
             return (
               <div 
                 key={match.id}
-                className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:border-primary/30"
+                className={`bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 transition-all hover:border-primary/30 ${deletingId === match.id ? 'opacity-50 grayscale' : ''}`}
               >
-                <div className="flex items-center gap-6 flex-1 justify-center sm:justify-start">
+                <div className="flex items-center gap-4 sm:gap-6 flex-1 justify-center md:justify-start">
                   <div className="flex items-center gap-3">
-                    <span className="font-bold text-lg">{currentUser.name}</span>
-                    <span className={`text-2xl font-black w-10 h-10 flex items-center justify-center rounded-lg ${
+                    <span className="font-bold text-sm sm:text-base max-w-[80px] sm:max-w-none truncate">{currentUser.name}</span>
+                    <span className={`text-xl sm:text-2xl font-black w-10 h-10 flex items-center justify-center rounded-lg ${
                       result === 'win' ? 'bg-win/20 text-win' : 
                       result === 'loss' ? 'bg-loss/20 text-loss' : 
                       'bg-draw/20 text-draw'
@@ -77,20 +98,40 @@ export default function MatchHistory({ currentUser, friend, matches, onAddMatch 
                   <div className="text-muted-foreground font-bold">-</div>
 
                   <div className="flex items-center gap-3">
-                    <span className={`text-2xl font-black w-10 h-10 flex items-center justify-center rounded-lg ${
+                    <span className={`text-xl sm:text-2xl font-black w-10 h-10 flex items-center justify-center rounded-lg ${
                       result === 'loss' ? 'bg-win/20 text-win' : 
                       result === 'win' ? 'bg-loss/20 text-loss' : 
                       'bg-draw/20 text-draw'
                     }`}>
                       {friendScore}
                     </span>
-                    <span className="font-bold text-lg">{friend.name}</span>
+                    <span className="font-bold text-sm sm:text-base max-w-[80px] sm:max-w-none truncate">{friend.name}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-muted-foreground text-xs bg-secondary/30 px-3 py-1.5 rounded-full border border-border">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {formatDate(match.created_at)}
+                <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                  <div className="flex items-center gap-2 text-muted-foreground text-[10px] sm:text-xs bg-secondary/30 px-3 py-1.5 rounded-full border border-border">
+                    <Calendar className="w-3 h-3" />
+                    {formatDate(match.created_at)}
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => onEditMatch(match)}
+                      className="p-2 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors cursor-pointer"
+                      title="Editar"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(match.id)}
+                      disabled={deletingId === match.id}
+                      className="p-2 hover:bg-loss/10 hover:text-loss rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                      title="Eliminar"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             );

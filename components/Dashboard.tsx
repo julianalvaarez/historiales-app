@@ -22,6 +22,7 @@ export default function Dashboard({ currentUser, allProfiles }: DashboardProps) 
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedFriend, setSelectedFriend] = useState<Profile | null>(null);
   const [isAddingMatch, setIsAddingMatch] = useState(false);
+  const [matchToEdit, setMatchToEdit] = useState<Match | null>(null);
   const [loading, setLoading] = useState(true);
 
   const friends = useMemo(() =>
@@ -30,11 +31,11 @@ export default function Dashboard({ currentUser, allProfiles }: DashboardProps) 
 
   useEffect(() => {
     fetchMatches();
-
+    
     const channel = supabase
       .channel('dashboard-changes')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'matches' },
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'matches' }, 
         () => fetchMatches()
       )
       .subscribe();
@@ -50,7 +51,7 @@ export default function Dashboard({ currentUser, allProfiles }: DashboardProps) 
       .select('*')
       .or(`creator_id.eq.${currentUser.id},opponent_id.eq.${currentUser.id}`)
       .order('created_at', { ascending: false });
-
+    
     if (data) {
       setMatches(data);
     }
@@ -58,7 +59,7 @@ export default function Dashboard({ currentUser, allProfiles }: DashboardProps) 
   };
 
   const calculateH2H = (friendId: string): Stats => {
-    const h2hMatches = matches.filter(m =>
+    const h2hMatches = matches.filter(m => 
       (m.creator_id === currentUser.id && m.opponent_id === friendId) ||
       (m.creator_id === friendId && m.opponent_id === currentUser.id)
     );
@@ -81,11 +82,21 @@ export default function Dashboard({ currentUser, allProfiles }: DashboardProps) 
 
   const currentFriendMatches = useMemo(() => {
     if (!selectedFriend) return [];
-    return matches.filter(m =>
+    return matches.filter(m => 
       (m.creator_id === currentUser.id && m.opponent_id === selectedFriend.id) ||
       (m.creator_id === selectedFriend.id && m.opponent_id === currentUser.id)
     );
   }, [matches, selectedFriend, currentUser.id]);
+
+  const handleEdit = (match: Match) => {
+    setMatchToEdit(match);
+    setIsAddingMatch(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsAddingMatch(false);
+    setMatchToEdit(null);
+  };
 
   if (selectedFriend) {
     return (
@@ -98,19 +109,22 @@ export default function Dashboard({ currentUser, allProfiles }: DashboardProps) 
           Volver a la lista
         </button>
 
-        <MatchHistory
+        <MatchHistory 
           currentUser={currentUser}
           friend={selectedFriend}
           matches={currentFriendMatches}
           onAddMatch={() => setIsAddingMatch(true)}
+          onEditMatch={handleEdit}
+          onRefresh={fetchMatches}
         />
 
         {isAddingMatch && (
-          <MatchModal
+          <MatchModal 
             currentUser={currentUser}
             friend={selectedFriend}
-            onClose={() => setIsAddingMatch(false)}
+            onClose={handleCloseModal}
             onSave={fetchMatches}
+            matchToEdit={matchToEdit}
           />
         )}
       </div>
@@ -130,9 +144,9 @@ export default function Dashboard({ currentUser, allProfiles }: DashboardProps) 
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {friends.map(friend => (
-          <FriendCard
+          <FriendCard 
             key={friend.id}
-            friend={friend}
+            friend={friend} 
             stats={calculateH2H(friend.id)}
             onClick={() => setSelectedFriend(friend)}
           />
