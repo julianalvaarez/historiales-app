@@ -37,7 +37,7 @@ export default function MatchHistory({ currentUser, friend, matches, onAddMatch 
         
         <button
           onClick={onAddMatch}
-          className="sports-gradient text-white font-bold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-105 transition-transform active:scale-95"
+          className="sports-gradient text-white font-bold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-105 transition-transform active:scale-95 cursor-pointer"
         >
           <Plus className="w-5 h-5" />
           Nuevo Partido

@@ -14,7 +14,7 @@ export default function FriendCard({ friend, stats, onClick }: FriendCardProps) 
   return (
     <button
       onClick={onClick}
-      className="bg-card hover:ring-2 hover:ring-primary/50 transition-all border border-border rounded-2xl overflow-hidden group text-left flex flex-col active:scale-95"
+      className="bg-card hover:ring-2 hover:ring-primary/50 transition-all border border-border rounded-2xl overflow-hidden group text-left flex flex-col active:scale-95 cursor-pointer"
     >
       <div className="p-6 flex-1">
         <div className="flex items-center justify-between mb-4">

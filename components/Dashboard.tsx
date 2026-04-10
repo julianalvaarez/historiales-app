@@ -90,9 +90,9 @@ export default function Dashboard({ currentUser, allProfiles }: DashboardProps) 
   if (selectedFriend) {
     return (
       <div className="animate-in">
-        <button
+        <button 
           onClick={() => setSelectedFriend(null)}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors group"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors group cursor-pointer"
         >
           <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
           Volver a la lista

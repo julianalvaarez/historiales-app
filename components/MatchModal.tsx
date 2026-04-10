@@ -58,7 +58,7 @@ export default function MatchModal({ currentUser, friend, onClose, onSave }: Mat
           </h3>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-white/5 rounded-full transition-colors"
+            className="p-2 hover:bg-white/5 rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -102,16 +102,22 @@ export default function MatchModal({ currentUser, friend, onClose, onSave }: Mat
           <div className="mt-12 flex gap-4">
             <button
               onClick={onClose}
-              className="flex-1 py-4 font-bold rounded-2xl hover:bg-white/5 border border-border transition-all"
+              disabled={saving}
+              className="flex-1 py-4 font-bold rounded-2xl hover:bg-white/5 border border-border transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancelar
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 py-4 sports-gradient text-white font-bold rounded-2xl shadow-[0_10px_20px_-5px_rgba(59,130,246,0.4)] hover:scale-[1.02] active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 py-4 sports-gradient text-white font-bold rounded-2xl shadow-[0_10px_20px_-5px_rgba(59,130,246,0.4)] hover:scale-[1.02] active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
             >
-              {saving ? 'Guardando...' : (
+              {saving ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Guardando...
+                </>
+              ) : (
                 <>
                   <Save className="w-5 h-5" />
                   Guardar Resultado
