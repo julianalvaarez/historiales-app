@@ -1,0 +1,21 @@
+{
+  "name": "Historial Gallobanda",
+  "short_name": "Gallobanda",
+  "description": "Registra tus partidos de FIFA y visualiza las estadísticas con tus amigos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/image.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/image.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
