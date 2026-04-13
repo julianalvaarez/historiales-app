@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { supabase, Profile, Match } from '@/lib/supabase';
 import Login from '@/components/Login';
 import Dashboard from '@/components/Dashboard';
-import { Trophy, LogOut, User } from 'lucide-react';
+import { Trophy, LogOut, User, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+
 
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
@@ -78,21 +80,33 @@ export default function Home() {
             <h1 className="font-bold text-xl tracking-tight">FIFA </h1>
           </div>
 
-          {currentUser && (
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-full border border-border">
-                <User className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">{currentUser.name}</span>
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/stats" 
+              className="p-2 hover:bg-primary/10 hover:text-primary rounded-full transition-colors text-muted-foreground flex items-center gap-2"
+              title="Estadísticas Globales"
+            >
+              <TrendingUp className="w-5 h-5" />
+              <span className="hidden sm:inline text-sm font-bold uppercase tracking-tighter">Estadísticas</span>
+            </Link>
+
+            {currentUser && (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-full border border-border">
+                  <User className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">{currentUser.name}</span>
+                </div>
+                <button 
+                  onClick={handleLogout}
+                  className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-full transition-colors text-muted-foreground cursor-pointer"
+                  title="Cerrar Sesión"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={handleLogout}
-                className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-full transition-colors text-muted-foreground"
-                title="Cerrar Sesión"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
-            </div>
-          )}
+            )}
+          </div>
+
         </div>
       </header>
 
