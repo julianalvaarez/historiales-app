@@ -59,10 +59,10 @@ export default function GlobalStats() {
     const pairMap: Record<string, PairStats> = {};
 
     profiles.forEach(p => {
-      playerMap[p.id] = { 
-        id: p.id, 
-        name: p.name, 
-        wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, totalGames: 0 
+      playerMap[p.id] = {
+        id: p.id,
+        name: p.name,
+        wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, totalGames: 0
       };
     });
 
@@ -174,7 +174,7 @@ export default function GlobalStats() {
               <Zap className="w-10 h-10" />
             </div>
           </div>
-          
+
           <div className="bg-card border border-border p-6 rounded-3xl flex items-center justify-between shadow-sm group hover:border-primary/50 transition-colors">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-primary/10 rounded-2xl">
@@ -196,27 +196,27 @@ export default function GlobalStats() {
           {/* Best Players */}
           <div className="space-y-4">
             <h3 className="font-bold text-xs uppercase tracking-[0.2em] text-muted-foreground px-2">Jugadores Destacados</h3>
-            
-            <StatCard 
-              label="El que más gana" 
-              name={stats?.topWinner?.name} 
+
+            <StatCard
+              label="El que más gana"
+              name={stats?.topWinner?.name}
               value={`${stats?.topWinner?.wins} Vics`}
               icon={<Trophy className="w-5 h-5 text-win" />}
               bgColor="bg-win/10"
             />
-            
-            <StatCard 
-              label="El que más pierde" 
-              name={stats?.topLoser?.name} 
+
+            <StatCard
+              label="El que más pierde"
+              name={stats?.topLoser?.name}
               value={`${stats?.topLoser?.losses} Derrotas`}
               icon={<TrendingDown className="w-5 h-5 text-loss" />}
               bgColor="bg-loss/10"
             />
 
-            <StatCard 
-              label="Mejor Defensa" 
-              name={stats?.bestDefense?.name} 
-              value={`${(stats?.bestDefense?.goalsAgainst / (stats?.bestDefense?.totalGames || 1)).toFixed(1)} pp`}
+            <StatCard
+              label="Mejor Defensa"
+              name={stats?.bestDefense?.name}
+              value={`${(((stats?.bestDefense?.goalsAgainst ?? 0) / (stats?.bestDefense?.totalGames ?? 1)).toFixed(2))} goles/partido`}
               icon={<Shield className="w-5 h-5 text-emerald-500" />}
               bgColor="bg-emerald-500/10"
             />
@@ -280,8 +280,8 @@ export default function GlobalStats() {
                     <div className="text-xl font-black text-win">{stats.closestPair.p1Wins}</div>
                   </div>
                   <div className="px-4 text-center">
-                     <div className="text-xs text-muted-foreground font-extrabold italic">VS</div>
-                     <div className="text-[10px] font-bold bg-secondary px-2 py-0.5 rounded-full mt-1 whitespace-nowrap">{stats.closestPair.totalGames} PJ</div>
+                    <div className="text-xs text-muted-foreground font-extrabold italic">VS</div>
+                    <div className="text-[10px] font-bold bg-secondary px-2 py-0.5 rounded-full mt-1 whitespace-nowrap">{stats.closestPair.totalGames} PJ</div>
                   </div>
                   <div className="text-center flex-1">
                     <div className="font-bold truncate">{stats.closestPair.p2Name}</div>
