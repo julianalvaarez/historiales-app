@@ -9,6 +9,8 @@ interface PlayerStats extends Stats {
   id: string;
   name: string;
   totalGames: number;
+  points: number;
+  average: number;
 }
 
 interface Stats {
@@ -62,7 +64,8 @@ export default function GlobalStats() {
       playerMap[p.id] = {
         id: p.id,
         name: p.name,
-        wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, totalGames: 0
+        wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, totalGames: 0,
+        points: 0, average: 0
       };
     });
 
@@ -118,7 +121,11 @@ export default function GlobalStats() {
       pKey.diff = Math.abs(pKey.p1Wins - pKey.p2Wins);
     });
 
-    const players = Object.values(playerMap);
+    const players = Object.values(playerMap).map(p => {
+      const points = p.wins * 3 + p.draws;
+      const average = p.totalGames > 0 ? points / p.totalGames : 0;
+      return { ...p, points, average };
+    });
     const pairs = Object.values(pairMap);
 
     return {
@@ -132,7 +139,12 @@ export default function GlobalStats() {
       topLoser: [...players].sort((a, b) => b.losses - a.losses)[0],
       bestDefense: [...players].filter(p => p.totalGames > 0).sort((a, b) => (a.goalsAgainst / a.totalGames) - (b.goalsAgainst / b.totalGames))[0],
       totalMatches: matches.length,
-      avgGoals: matches.length > 0 ? (matches.reduce((acc, m) => acc + m.user_score + m.opponent_score, 0) / matches.length).toFixed(2) : 0
+      avgGoals: matches.length > 0 ? (matches.reduce((acc, m) => acc + m.user_score + m.opponent_score, 0) / matches.length).toFixed(2) : 0,
+      standings: [...players].sort((a, b) => {
+        if (b.average !== a.average) return b.average - a.average;
+        if (b.points !== a.points) return b.points - a.points;
+        return b.wins - a.wins;
+      })
     };
   }, [profiles, matches]);
 
@@ -158,6 +170,70 @@ export default function GlobalStats() {
       </header>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
+        {/* Standings Table */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-2">
+            <h3 className="font-bold text-xs uppercase tracking-[0.2em] text-muted-foreground">Tabla de Posiciones</h3>
+            <span className="text-[10px] text-muted-foreground font-medium">* Ordenado por Promedio</span>
+          </div>
+          
+          <div className="bg-card border border-border rounded-[2rem] overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-secondary/30 border-b border-border">
+                    <th className="px-4 py-4 text-[10px] uppercase font-black text-muted-foreground">Pos</th>
+                    <th className="px-4 py-4 text-[10px] uppercase font-black text-muted-foreground">Jugador</th>
+                    <th className="px-4 py-4 text-[10px] uppercase font-black text-primary text-center">Prom</th>
+                    <th className="px-4 py-4 text-[10px] uppercase font-black text-muted-foreground text-center">PJ</th>
+                    <th className="px-4 py-4 text-[10px] uppercase font-black text-win text-center">G</th>
+                    <th className="px-4 py-4 text-[10px] uppercase font-black text-loss text-center">P</th>
+                    <th className="px-4 py-4 text-[10px] uppercase font-black text-muted-foreground text-center">E</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {stats?.standings.map((player, index) => (
+                    <tr key={player.id} className="hover:bg-secondary/10 transition-colors group">
+                      <td className="px-4 py-4">
+                        <span className={`
+                          flex items-center justify-center w-6 h-6 rounded-lg text-[10px] font-black
+                          ${index === 0 ? 'bg-primary text-primary-foreground' : 
+                            index === 1 ? 'bg-secondary text-foreground' : 
+                            index === 2 ? 'bg-orange-500/20 text-orange-600' : 'text-muted-foreground'}
+                        `}>
+                          {index + 1}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="font-bold text-sm whitespace-nowrap">{player.name}</div>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <div className="inline-flex items-center justify-center px-2 py-0.5 bg-primary/5 rounded-full border border-primary/10">
+                          <span className="text-xs font-black text-primary">
+                            {player.average.toFixed(2)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-center text-sm font-medium text-muted-foreground">
+                        {player.totalGames}
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <span className="text-sm font-black text-win">{player.wins}</span>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <span className="text-sm font-black text-loss">{player.losses}</span>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <span className="text-sm font-bold text-muted-foreground">{player.draws}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         {/* Top Cards Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-card border border-border p-6 rounded-3xl flex items-center justify-between shadow-sm group hover:border-primary/50 transition-colors">
@@ -292,6 +368,7 @@ export default function GlobalStats() {
             )}
           </div>
         </div>
+
       </div>
     </main>
   );
